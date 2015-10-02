@@ -1,0 +1,19 @@
+```{r,echo=FALSE,results="asis"}
+suppressPackageStartupMessages(library(lubridate))
+suppressPackageStartupMessages(library(surveillance))
+suppressPackageStartupMessages(library(dygraphs))
+ms.2013 <- read.csv("2013MASTER.csv")[,c(2,4,5)]
+names(ms.2013) <- c("Date","Dead","Injured")
+ms.2014 <- read.csv("2014MASTER.csv")[,c(2,4,5)]
+ms.2015 <- read.csv("2015CURRENT.csv")[,c(2,4,5)]
+ms <- rbind(ms.2013,ms.2014,ms.2015)
+ms$Date <- mdy(ms$Date)
+ms.sts <- linelist2sts(ms,"Date",aggregate.by="1 day")
+dygraph(ms.sts,xlab="Time",ylab="Number",main="Average daily mass shootings in US, 2013-present") %>%
+  dyRangeSelector() %>%
+  dyRoller(rollPeriod=7)
+```
+
+Change the number in the box at the bottom left to change the smoothing (default 7 days); if you change to 365 days, you can see it's almost one per day.
+
+Data from [Mass Shooting Tracker](http://www.shootingtracker.com), visualisation using [htmlwidgets](http://www.htmlwidgets.com) and [dygraphs](http://dygraphs.com).
